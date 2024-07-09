@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "mpmonitor"
+version = "0.1.0"
+description = ""
+authors = ["Naury <koertyf@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = {extras = ["all"], version = "^0.111.0"}
+uvicorn = "^0.30.1"
+pydantic = "^2.8.2"
+sqlalchemy = "^2.0.31"
+bcrypt = "^4.1.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
