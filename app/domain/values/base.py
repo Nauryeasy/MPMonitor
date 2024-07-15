@@ -20,20 +20,3 @@ class BaseValueObject(ABC, Generic[VT]):
     @abstractmethod
     def as_generic_type(self) -> VT:
         ...
-
-
-@dataclass(frozen=True)
-class Id(BaseValueObject[int]):
-
-    def validate(self) -> None:
-        if not self.value:
-            raise ValueError('Id cannot be empty')
-
-        if not isinstance(self.value, int):
-            raise ValueError('Id must be an integer')
-
-        if self.value < 0:
-            raise ValueError('Id cannot be negative')
-
-    def as_generic_type(self) -> int:
-        return int(self.value)

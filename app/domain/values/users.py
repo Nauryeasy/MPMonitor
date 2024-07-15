@@ -1,56 +1,71 @@
+from abc import ABC
 from dataclasses import dataclass, field
 import re
 import bcrypt
 
 from domain.values.base import BaseValueObject
+from domain.exceptions.users import (
+    UserNameIsEmptyException,
+    UserNameIsTooLongException,
+    UserNameIsTooShortException,
+    UserNameIsNotAlphanumericException,
+    EmailIsEmptyException,
+    EmailIsNotValidException,
+    EmailIsTooLongException,
+    PasswordIsEmptyException,
+)
 
-# TODO: Add tests
 
 @dataclass(frozen=True)
-class UserName(BaseValueObject):
+class BaseUserValueObject(BaseValueObject, ABC):
+    ...
+
+
+@dataclass(frozen=True)
+class UserName(BaseUserValueObject):
     value: str
 
-    def validate(self):
+    def validate(self) -> None:
         if not self.value:
-            raise ValueError('Name cannot be empty')
+            raise UserNameIsEmptyException()
 
         if len(self.value) < 3:
-            raise ValueError('Name must be at least 3 characters long')
+            raise UserNameIsTooShortException(self.value)
 
         if len(self.value) > 50:
-            raise ValueError('Name must be at most 50 characters long')
+            raise UserNameIsTooLongException(self.value)
 
         if not self.value.isalnum():
 
             # TODO: Change the validation to check the content of special characters
 
-            raise ValueError('Name must only contain letters')
+            raise UserNameIsNotAlphanumericException(self.value)
 
-    def as_generic_type(self):
+    def as_generic_type(self) -> str:
         return str(self.value)
 
 
 @dataclass(frozen=True)
-class Email(BaseValueObject):
+class Email(BaseUserValueObject):
     __email_pattern = re.compile(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)")
     value: str
 
-    def validate(self):
+    def validate(self) -> None:
         if not self.value:
-            raise ValueError('Email cannot be empty')
+            raise EmailIsEmptyException()
 
         if len(self.value) > 50:
-            raise ValueError('Email must be at most 50 characters long')
+            raise EmailIsTooLongException(self.value)
 
         if not self.__email_pattern.match(self.value):
-            raise ValueError('Email is not valid')
+            raise EmailIsNotValidException(self.value)
 
-    def as_generic_type(self):
+    def as_generic_type(self) -> str:
         return str(self.value)
 
 
 @dataclass(frozen=True)
-class Password(BaseValueObject):
+class Password(BaseUserValueObject):
     value: str = field(repr=False)
 
     def __post_init__(self):
@@ -59,12 +74,12 @@ class Password(BaseValueObject):
 
         object.__setattr__(self, 'value', hashed_password)
 
-    def __hash_password(self):
+    def __hash_password(self) -> str:
         return bcrypt.hashpw(self.value.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-    def validate(self):
+    def validate(self) -> None:
         if not self.value:
-            raise ValueError('Password cannot be empty')
+            raise PasswordIsEmptyException()
 
-    def as_generic_type(self):
+    def as_generic_type(self) -> str:
         return str(self.value)
