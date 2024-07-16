@@ -7,6 +7,9 @@ from domain.exceptions.users import TypeIsNotValidException
 from domain.values.users import Email, Password, UserName, BaseUserValueObject
 
 
+# TODO: User Faker
+
+
 def test_user_create_success():
     user_name = UserName('test')
     first_name = UserName('test')

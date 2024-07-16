@@ -14,6 +14,9 @@ from domain.exceptions.users import (
 from domain.values.users import Email, Password, UserName
 
 
+# TODO: User Faker
+
+
 def test_user_name_validate_success():
     user_name = 'test'
 
